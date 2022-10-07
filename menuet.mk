@@ -33,7 +33,7 @@ BINARY = $(ESCAPED_APP).app/Contents/MacOS/$(EXECUTABLE)
 PLIST = $(ESCAPED_APP).app/Contents/Info.plist
 
 run: $(BINARY) $(PLIST)
-	./$(BINARY)
+	open ./$(ESCAPED_APP).app
 
 SOURCEDIRS = $(abspath $(dir $(MAKEFILE_LIST)))
 SOURCES := $(shell find $(SOURCEDIRS) $(LIBDIRS) -name '*.go' -o -name '*.m' -o -name '*.h' -o -name '*.c' -o -name '*.mk' -o -name Makefile)

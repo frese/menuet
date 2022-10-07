@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#import <UserNotifications/UserNotifications.h>
 
 #import "NSImage+Resize.h"
 #import "menuet.h"
@@ -172,7 +173,7 @@ NSStatusItem *_statusItem;
 
 @end
 
-@interface MenuetAppDelegate : NSObject <NSApplicationDelegate, NSMenuDelegate, NSUserNotificationCenterDelegate>
+@interface MenuetAppDelegate : NSObject <NSApplicationDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate>
 
 @end
 
@@ -210,7 +211,11 @@ void createAndRunApplication() {
         NSApplication *a = NSApplication.sharedApplication;
         MenuetAppDelegate *d = [MenuetAppDelegate new];
         [a setDelegate:d];
-        [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:d];
+	    // UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+		// center.delegate = self;
+
+        // [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:d];
+
         [a setActivationPolicy:NSApplicationActivationPolicyAccessory];
         _statusItem = [[NSStatusBar systemStatusBar]
                        statusItemWithLength:NSVariableStatusItemLength];
@@ -227,13 +232,51 @@ void createAndRunApplication() {
         return NSTerminateNow;
 }
 
-- (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
-        if (notification.activationType == NSUserNotificationActivationTypeReplied) {
-                NSString* userResponse = notification.response.string;
-                notificationRespond(notification.identifier.UTF8String, userResponse.UTF8String);
-	} else {
-                notificationRespond(notification.identifier.UTF8String, @"".UTF8String);
-	}
+// - (void)userNotificationCenter:(UNUserNotificationCenterDelegate *)center didActivateNotification:(UNUserNotification *)notification {
+//         if (notification.activationType == NSUserNotificationActivationTypeReplied) {
+//                 NSString* userResponse = notification.response.string;
+//                 notificationRespond(notification.identifier.UTF8String, userResponse.UTF8String);
+// 	} else {
+//                 notificationRespond(notification.identifier.UTF8String, @"".UTF8String);
+// 	}
+// }
+
+// # pragma mark UNNotificationCenter Delegate Methods
+
+// - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+//      if( SYSTEM_VERSION_LESS_THAN( @"10.0" ) )
+// {
+
+//     [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil]];
+//     [[UIApplication sharedApplication] registerForRemoteNotifications];
+// }
+// else
+// {
+//     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+//     center.delegate = self;
+//     [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error)
+//      {
+//          if( !error )
+//          {
+//             //  [[UIApplication sharedApplication] registerForRemoteNotifications];  // required to get the app to do anything at all about push notifications
+//              NSLog( @"Push registration success." );
+//          }
+//          else
+//          {
+//              NSLog( @"Push registration FAILED" );
+//              NSLog( @"ERROR: %@ - %@", error.localizedFailureReason, error.localizedDescription );
+//              NSLog( @"SUGGESTIONS: %@ - %@", error.localizedRecoveryOptions, error.localizedRecoverySuggestion );  
+//          }  
+//      }];  
+// }
+// return YES;
+// }
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
+{
+    // called when a user selects an action in a delivered notification
+    NSLog(@"didReceiveNotificationResponse %@", response);
+    completionHandler();
 }
 
 @end
